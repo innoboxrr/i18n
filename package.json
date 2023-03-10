@@ -1,0 +1,25 @@
+{
+  "name": "innoboxrr-i18n",
+  "version": "1.0.0",
+  "description": "Añade soporte de internacionalización de internacionalización. Pensado para una APP de Laravel con VueJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innoboxrr/i18n.git"
+  },
+  "keywords": [
+    "i18n",
+    "laravel",
+    "vuejs",
+    "multi-idioma"
+  ],
+  "author": "Homero Raul Vargas Cruz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/innoboxrr/i18n/issues"
+  },
+  "homepage": "https://github.com/innoboxrr/i18n#readme"
+}
