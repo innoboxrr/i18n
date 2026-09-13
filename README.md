@@ -2,31 +2,61 @@
 
 **A tiny translation runtime for JavaScript. No dependencies, no build step.**
 
-Load a translation set, pick a locale, resolve keys. That is the whole surface.
+Load translations, pick a locale, resolve keys. That is the whole surface.
 
 ```js
-import { setTranslations, setLocale, trans } from 'innoboxrr-i18n';
+import t, { addTranslations, setLocale } from 'innoboxrr-i18n';
 
-setTranslations({
-  'en-US': { greeting: 'Hello, :name' },
-  'es-MX': { greeting: 'Hola, :name' },
+addTranslations({
+  en: { 'Hello :name': 'Hello :name' },
+  es: { 'Hello :name': 'Hola :name' },
 });
 
 setLocale('es-MX');
-trans('greeting', { name: 'Homero' });   // → Hola, Homero
+t('Hello :name', { name: 'Homero' });   // → Hola Homero
 ```
 
-## Why it is this small
+## API
 
-Most i18n libraries bring a loader, a formatter, a plural engine and a framework binding. If your translations already come from the backend as a JSON object, you need almost none of that — you need a place to put them and a way to look keys up.
+| Export | What it does |
+|---|---|
+| `t(key, replace?)` *(default)* | The translation of `key` in the current locale, or `key` itself when there is none. `:name` placeholders are replaced from `replace`, every occurrence. |
+| `addTranslations(source)` | Adds translations to the ones already loaded. A key loaded later wins. |
+| `setTranslations(source)` | Replaces everything loaded so far. |
+| `setLocale(locale)` / `getLocale()` | The current locale. An empty value is ignored. |
+| `hasTranslation(key)` | Whether `key` has a non-empty translation in the current locale. |
 
-Locale matching is forgiving: `setLocale('es')` resolves against `es-MX` if that is what you loaded, so you do not have to normalise tags before calling it.
+`source` is either an object keyed by locale, or Vite's eager glob over JSON files:
+
+```js
+addTranslations(import.meta.glob('/resources/locales/*.json', { eager: true }));
+```
+
+## Several sources
+
+A module can ship its own translations and the application can load its own on top. Load the module's first, so the application has the last word:
+
+```js
+import { translations as catalog } from 'acme-catalog';
+
+addTranslations(catalog);
+addTranslations(import.meta.glob('/resources/locales/*.json', { eager: true }));
+setLocale(document.documentElement.lang);
+```
+
+An empty translation (`"Create": ""`, which is what `locale-gen` writes for a new key) means *not translated yet*: it never overrides a translation loaded before it, and with nothing else `t()` shows the key instead of a blank.
+
+## Locale matching
+
+- The locale is the file name: `/resources/locales/es.json` is `es`. The rest of the path is ignored.
+- `es-MX` uses the `es` translations and overrides them with `es-MX` where both exist.
+- `es` falls back to a regional variant (`es-MX`) when there is no plain `es`.
+- Case and `_` do not matter: `es_MX.json` matches `setLocale('es-mx')`.
 
 | | |
 |---|---|
 | **Zero dependencies** | Plain ES modules |
 | **Framework agnostic** | Works anywhere — Vue, React, vanilla |
-| **Partial locale matching** | `es` finds `es-MX` |
 | **Parameter replacement** | `:name` placeholders, same convention as Laravel |
 
 ## Install
@@ -35,7 +65,7 @@ Locale matching is forgiving: `setLocale('es')` resolves against `es-MX` if that
 npm install innoboxrr-i18n
 ```
 
-Pairs naturally with [`innoboxrr-locale-generator`](https://github.com/innoboxrr/innoboxrr-locale-generator), which produces the translation bundles this consumes.
+Pairs naturally with [`innoboxrr-locale-generator`](https://github.com/innoboxrr/innoboxrr-locale-generator), which collects the `t('…')` keys of a project into these JSON files.
 
 ---
 
