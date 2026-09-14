@@ -70,3 +70,7 @@ Pairs naturally with [`innoboxrr-locale-generator`](https://github.com/innoboxrr
 ---
 
 Part of [Innobox R&R](https://github.com/innoboxrr) — 52 open-source packages extracted from production work. **[innobox.systems](https://innobox.systems)**
+
+## Documentación / Documentation
+
+Documentación completa del ecosistema, en español y en inglés / Full ecosystem documentation, in Spanish and English: <https://innoboxrr.github.io/docs/interfaz/http-rutas-i18n>
